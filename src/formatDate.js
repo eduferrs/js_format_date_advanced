@@ -8,44 +8,40 @@
  * @returns {string}
  */
 function formatDate(date, fromFormat, toFormat) {
-  let oldIndexY = fromFormat.indexOf('YYYY');
-
-  if (oldIndexY === -1) {
-    oldIndexY = fromFormat.indexOf('YY');
-  }
-
-  const oldIndexM = fromFormat.indexOf('MM');
-  const oldIndexD = fromFormat.indexOf('DD');
-
-  let newIndexY = toFormat.indexOf('YYYY');
-
-  if (newIndexY === -1) {
-    newIndexY = toFormat.indexOf('YY');
-  }
-
-  const newIndexM = toFormat.indexOf('MM');
-  const newIndexD = toFormat.indexOf('DD');
-
   const sepFrom = fromFormat[3];
-  const newDate = Array(3).fill('');
-
+  const sepTo = toFormat[3];
   const parts = date.split(sepFrom);
 
-  let yearValue = parts[oldIndexY];
+  const map = {};
 
-  if (fromFormat[oldIndexY] === 'YY') {
-    yearValue = (+yearValue < 30 ? '20' : '19') + yearValue;
+  for (let i = 0; i < 3; i++) {
+    const token = fromFormat[i];
+
+    map[token] = parts[i];
   }
 
-  if (toFormat[newIndexY] === 'YY') {
-    yearValue = yearValue.slice(-2);
+  let fullYear = '';
+
+  if (map.YYYY) {
+    fullYear = map.YYYY;
+  } else if (map.YY) {
+    const yearNum = +map.YY;
+
+    fullYear = (yearNum < 30 ? '20' : '19') + map.YY;
   }
 
-  newDate[newIndexY] = yearValue;
-  newDate[newIndexM] = parts[oldIndexM];
-  newDate[newIndexD] = parts[oldIndexD];
+  map.YYYY = fullYear;
+  map.YY = fullYear.slice(-2);
 
-  return newDate.join(toFormat[3]);
+  const result = [];
+
+  for (let i = 0; i < 3; i++) {
+    const token = toFormat[i];
+
+    result.push(map[token]);
+  }
+
+  return result.join(sepTo);
 }
 
 module.exports = formatDate;
