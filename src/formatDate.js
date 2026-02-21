@@ -8,32 +8,40 @@
  * @returns {string}
  */
 function formatDate(date, fromFormat, toFormat) {
-  const oldIndexY = fromFormat.indexOf('YYYY');
-  const oldIndexM = fromFormat.indexOf('MM');
-  const oldIndexD = fromFormat.indexOf('DD');
-  const newIndexY = toFormat.indexOf('YYYY');
-  const newIndexM = toFormat.indexOf('MM');
-  const newIndexD = toFormat.indexOf('DD');
-  const newDate = [0, 1, 2];
-
-  const parts = date.split(fromFormat[3]);
-
-  if (newIndexY === -1) {
-    newDate[toFormat.indexOf('YY')] = parts[oldIndexY].slice(2);
-  } else {
-    newDate[newIndexY] = parts[oldIndexY];
-  }
+  let oldIndexY = fromFormat.indexOf('YYYY');
 
   if (oldIndexY === -1) {
-    if (parts[fromFormat.indexOf('YY')] < 30) {
-      newDate[newIndexY] = `20${parts[fromFormat.indexOf('YY')]}`;
-    } else {
-      newDate[newIndexY] = `19${parts[fromFormat.indexOf('YY')]}`;
-    }
-  } else {
-    newDate[newIndexY] = parts[oldIndexY];
+    oldIndexY = fromFormat.indexOf('YY');
   }
 
+  const oldIndexM = fromFormat.indexOf('MM');
+  const oldIndexD = fromFormat.indexOf('DD');
+
+  let newIndexY = toFormat.indexOf('YYYY');
+
+  if (newIndexY === -1) {
+    newIndexY = toFormat.indexOf('YY');
+  }
+
+  const newIndexM = toFormat.indexOf('MM');
+  const newIndexD = toFormat.indexOf('DD');
+
+  const sepFrom = fromFormat[3];
+  const newDate = Array(3).fill('');
+
+  const parts = date.split(sepFrom);
+
+  let yearValue = parts[oldIndexY];
+
+  if (fromFormat[oldIndexY] === 'YY') {
+    yearValue = (+yearValue < 30 ? '20' : '19') + yearValue;
+  }
+
+  if (toFormat[newIndexY] === 'YY') {
+    yearValue = yearValue.slice(-2);
+  }
+
+  newDate[newIndexY] = yearValue;
   newDate[newIndexM] = parts[oldIndexM];
   newDate[newIndexD] = parts[oldIndexD];
 
